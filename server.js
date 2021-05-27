@@ -22,6 +22,7 @@ dotenv.config();
 
 // app
 const app = express();
+app.use(cors());
 
 // database
 connectDB();
@@ -36,8 +37,6 @@ app.use(cookieParser());
 // if (process.env.NODE_ENV === "devlopment") {
 //   app.use(cors({ origin: `${process.env.CLIENT_URL}` }));
 // }
-app.use(cors({ origin: "https://jolly-khorana-65bb46.netlify.app" }));
-// app.use(cors());
 
 app.get("/", (req, res) => {
   res.send("bitch ..it's my api..");
