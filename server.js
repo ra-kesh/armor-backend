@@ -33,12 +33,10 @@ app.use(express.json());
 app.use(cookieParser());
 
 // cors
-if (process.env.NODE_ENV === "devlopment") {
-  app.use(cors({ origin: `${process.env.CLIENT_URL}` }));
-} else {
-  app.use(cors({ origin: "https://focused-jennings-a9d854.netlify.app" }));
-}
-
+// if (process.env.NODE_ENV === "devlopment") {
+//   app.use(cors({ origin: `${process.env.CLIENT_URL}` }));
+// }
+app.use(cors({ origin: "https://focused-jennings-a9d854.netlify.app" }));
 app.use(cors());
 
 app.get("/", (req, res) => {
