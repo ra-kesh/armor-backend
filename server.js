@@ -39,7 +39,17 @@ app.use(cookieParser());
 // if (process.env.NODE_ENV === "production") {
 //   app.use(cors());
 // }
-app.use(cors());
+app.use(function (req, res, next) {
+  //Enabling CORS
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type,Accept, x-client-key, x-client-token, x-client-secret, Authorization"
+  );
+  next();
+});
+// app.use(cors());
 
 app.get("/", (req, res) => {
   res.send("bitch ..it's my api..");
