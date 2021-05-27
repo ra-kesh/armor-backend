@@ -1,8 +1,8 @@
 import User from "../models/userModel.js";
-import asyncHandler from "express-async-handler";
+import expressAsyncHandler from "express-async-handler";
 import generateToken from "../utils/generateToken.js";
 
-const registerUser = asyncHandler(async (req, res) => {
+const registerUser = expressAsyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
 
   const userExists = await User.findOne({ email });
@@ -32,7 +32,7 @@ const registerUser = asyncHandler(async (req, res) => {
   }
 });
 
-const loginUser = asyncHandler(async (req, res) => {
+const loginUser = expressAsyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
   const user = await User.findOne({ email });
@@ -51,7 +51,7 @@ const loginUser = asyncHandler(async (req, res) => {
   }
 });
 
-const getUserProfile = asyncHandler(async (req, res) => {
+const getUserProfile = expressAsyncHandler(async (req, res) => {
   const user = await User.findById(req.user._id);
 
   if (user) {
