@@ -33,11 +33,11 @@ app.use(express.json());
 app.use(cookieParser());
 
 // cors
-if (process.env.NODE_ENV === "Production") {
+if (process.env.NODE_ENV === "production") {
   app.use(cors({ origin: `${process.env.CLIENT_URL}` }));
 }
-// if (process.env.NODE_ENV === "Production") {
-//   app.use(cors({ origin: `${process.env.CLIENT_URL}` }));
+// if (process.env.NODE_ENV === "production") {
+//   app.use(cors());
 // }
 
 app.get("/", (req, res) => {
