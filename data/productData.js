@@ -2,7 +2,7 @@ import faker from "faker";
 
 faker.seed(123);
 
-const imgArray = [
+const jacketArray = [
   "https://cdn.shopify.com/s/files/1/1947/9551/products/Rynox_Tornado_Pro_3_Jacket_Orange_1_376x.jpg?v=1611827730",
   "https://cdn.shopify.com/s/files/1/1947/9551/products/Rynox_Tornado_Pro_3_Jacket_Blue_1_376x.jpg?v=1611827799",
   "https://cdn.shopify.com/s/files/1/1947/9551/products/Rynox_Tornado_Pro_3_Jacket_Red_1_376x.jpg?v=1611828010",
@@ -17,15 +17,37 @@ const imgArray = [
   "https://cdn.shopify.com/s/files/1/1947/9551/products/Rynox_Storm_Grey-01_376x.jpg?v=1610447203",
 ];
 
+const helmetArray = [
+  "https://cdn.shopify.com/s/files/1/1045/6728/products/MT-scalpel-blue-1_1800x1800.jpg?v=1618563004",
+  "https://cdn.shopify.com/s/files/1/1045/6728/products/Hummer-Melkor-fl.-yellow2_1800x1800.jpg?v=1615177132",
+  "https://cdn.shopify.com/s/files/1/1045/6728/products/MT-Thunder3-Turbine-Fl1_1800x1800.jpg?v=1612327367",
+  "https://cdn.shopify.com/s/files/1/1045/6728/products/MT-Thunder3-SV-Effect-Fl-Yellow-Gloss-Helmets-1_1800x1800.jpg?v=1618651799",
+  "https://cdn.shopify.com/s/files/1/1045/6728/products/MT-Hummer-Shark-2_1800x1800.jpg?v=1615441013",
+  "https://cdn.shopify.com/s/files/1/1045/6728/products/Lycan-matt-02_1_1800x1800.jpg?v=1615203156",
+  "https://cdn.shopify.com/s/files/1/1045/6728/products/Braaap-1_1800x1800.jpg?v=1609917430",
+  "https://cdn.shopify.com/s/files/1/1045/6728/products/Piston-1_1800x1800.jpg?v=1611135168",
+  "https://cdn.shopify.com/s/files/1/1045/6728/products/Nahesha-Gloss-Fluor-Green-1_1800x1800.jpg?v=1579872927",
+  "https://cdn.shopify.com/s/files/1/1045/6728/products/REVENGE-2-SOLID-A11-GLOSS-BLACK-1_1800x1800.jpg?v=1578382956",
+];
+
+const gloveArray = [
+  "https://cdn.shopify.com/s/files/1/1045/6728/products/SCIMITAR-Street-Short-Cuff-Gloves-_Black_1_1800x1800.jpg?v=1573820503",
+  "https://cdn.shopify.com/s/files/1/1045/6728/products/ASPIDA-Ares-Full-Gauntlet-Leather-Gloves-1_1800x1800.jpg?v=1574074893",
+  "https://cdn.shopify.com/s/files/1/1045/6728/products/Centaur-1_1800x1800.jpg?v=1573991442",
+  "https://cdn.shopify.com/s/files/1/1045/6728/products/Macna-Assault-Black-1_1800x1800.jpg?v=1615547299",
+  "https://cdn.shopify.com/s/files/1/1045/6728/products/MACNA-OCTAR-LADIES-BLACK-1_1_1800x1800.jpg?v=1607579592",
+];
+
+const shoeArray = [
+  "https://cdn.shopify.com/s/files/1/1045/6728/products/1_1800x1800.jpg?v=1608028441",
+  "https://cdn.shopify.com/s/files/1/1045/6728/products/ADVENTURE-BLACK-1_1800x1800.jpg?v=1580710833",
+  "https://cdn.shopify.com/s/files/1/1045/6728/products/Ryo-Onex-Sports-Riding-Boots-1_1800x1800.jpg?v=1573048869",
+  "https://cdn.shopify.com/s/files/1/1045/6728/products/Voyage-1_1_1800x1800.jpg?v=1602839641",
+];
+
 export const brandNameArray = ["RYNOX", "MUNRO", "SCIMITAR", "MACNA", "ASPIDA"];
 
-const nameArray = [
-  "STEALTH EVO 3 JACKET",
-  "TORNADO PRO 3 JACKET",
-  "STORM EVO JACKET",
-  "URBAN JACKET",
-  "AIR GT 3 JACKET",
-];
+const nameArray = ["ADVENTURE-BLACK-1", "Ryo-Onex", "Voyage-1", "Braaap-1"];
 
 const descriptionArray = [
   "dsiorjvioj vihrevhreuvggvy gyvgdiuvuidvhiudfhvi udfhuvugygvyergvyerugerw8uvg87vg",
@@ -45,9 +67,9 @@ const countArray = [2, 20, 50, 6, 10, 15];
 
 const categoryArray = ["jackets", "helmets", "shoes", "gloves"];
 
-export const products = [...Array(12)].map((item) => ({
+export const products = [...Array(4)].map((item) => ({
   name: faker.random.arrayElement(nameArray),
-  image: faker.random.arrayElement(imgArray),
+  image: faker.random.arrayElement(shoeArray),
   brand: faker.random.arrayElement(brandNameArray),
   description: faker.random.arrayElement(descriptionArray),
   price: faker.random.arrayElement(priceArray),
@@ -55,6 +77,6 @@ export const products = [...Array(12)].map((item) => ({
   inStock: faker.datatype.boolean(),
   rating: faker.random.arrayElement(ratingArray),
   quantity: 1,
-  category: faker.random.arrayElement(categoryArray),
+  category: "shoes",
   discount: faker.random.arrayElement(discountArray),
 }));
