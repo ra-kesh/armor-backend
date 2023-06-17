@@ -33,13 +33,13 @@ app.use(morgan("dev"));
 app.use(express.json());
 app.use(cookieParser());
 
-// cors
-// if (process.env.NODE_ENV === "devlopment") {
-//   app.use(cors({ origin: `${process.env.CLIENT_URL}` }));
-// }
+cors;
+if (process.env.NODE_ENV === "devlopment") {
+  app.use(cors({ origin: `${process.env.CLIENT_URL}` }));
+}
 
 app.get("/", (req, res) => {
-  res.send("bitch ..it's my api..");
+  res.send("bitch ..it's my api..get lost");
 });
 
 // routes
