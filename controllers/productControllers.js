@@ -23,7 +23,7 @@ const getAllProducts = expressAsyncHandler(async (req, res) => {
   }
 
   const options = {
-    limit: parseInt(limit) || 10,
+    limit: parseInt(limit) || 50,
     skip: parseInt(skip) || 0,
     sort: sort || null,
   };
