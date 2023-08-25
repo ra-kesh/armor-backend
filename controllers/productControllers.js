@@ -2,12 +2,15 @@ import { Product } from "../models/productModel.js";
 import expressAsyncHandler from "express-async-handler";
 
 const getAllProducts = expressAsyncHandler(async (req, res) => {
-  const { keyword, limit, skip, select, sort } = req.query;
+  const { search, limit, skip, select, sort } = req.query;
 
   const query = {};
 
-  if (keyword) {
-    query.name = { $regex: keyword, $options: "i" };
+  if (search) {
+    const searchFields = ["name", "description", "category", "brand"];
+    query.$or = searchFields.map((field) => ({
+      [field]: { $regex: search, $options: "i" },
+    }));
   }
 
   let selectFields = "";
