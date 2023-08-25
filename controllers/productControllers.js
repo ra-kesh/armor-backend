@@ -2,7 +2,7 @@ import { Product } from "../models/productModel.js";
 import expressAsyncHandler from "express-async-handler";
 
 const getAllProducts = expressAsyncHandler(async (req, res) => {
-  const { search, limit, skip, select, sort, category } = req.query;
+  const { search, limit, skip, select, sort, category, categories } = req.query;
 
   const query = {};
 
@@ -13,7 +13,16 @@ const getAllProducts = expressAsyncHandler(async (req, res) => {
     }));
   }
 
-  if (category) {
+  let categoryArray = [];
+  if (categories) {
+    categoryArray = categories.split(",");
+  }
+
+  if (categoryArray.length > 0) {
+    query.category = { $in: categoryArray };
+  }
+
+  if (category !== "all") {
     query.category = category;
   }
 
@@ -35,7 +44,16 @@ const getAllProducts = expressAsyncHandler(async (req, res) => {
     .sort(options.sort)
     .exec();
 
-  res.status(200).json({ success: true, data: products });
+  const productsCount = await Product.countDocuments().exec();
+
+  const response = {
+    products,
+    total: category !== "all" ? products.length : productsCount,
+    limit: limit,
+    skip: skip,
+  };
+
+  res.status(200).json(response);
 });
 
 const getProductDetails = expressAsyncHandler(async (req, res) => {
