@@ -2,7 +2,7 @@ import { Product } from "../models/productModel.js";
 import expressAsyncHandler from "express-async-handler";
 
 const getAllProducts = expressAsyncHandler(async (req, res) => {
-  const { search, limit, skip, select, sort } = req.query;
+  const { search, limit, skip, select, sort, category } = req.query;
 
   const query = {};
 
@@ -11,6 +11,10 @@ const getAllProducts = expressAsyncHandler(async (req, res) => {
     query.$or = searchFields.map((field) => ({
       [field]: { $regex: search, $options: "i" },
     }));
+  }
+
+  if (category) {
+    query.category = category;
   }
 
   let selectFields = "";
@@ -40,4 +44,9 @@ const getProductDetails = expressAsyncHandler(async (req, res) => {
   res.status(200).json({ success: true, data: product });
 });
 
-export { getAllProducts, getProductDetails };
+const getProductCategories = expressAsyncHandler(async (req, res) => {
+  const categories = await Product.distinct("category");
+  res.status(200).json({ sucess: true, data: categories });
+});
+
+export { getAllProducts, getProductDetails, getProductCategories };
