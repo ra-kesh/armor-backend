@@ -13,17 +13,18 @@ const getAllProducts = expressAsyncHandler(async (req, res) => {
     }));
   }
 
-  let categoryArray = [];
   if (categories) {
-    categoryArray = categories.split(",");
-  }
-
-  if (categoryArray.length > 0) {
-    query.category = { $in: categoryArray };
-  }
-
-  if (category !== "all") {
+    const categoryArray = categories.split(",");
+    if (categoryArray.length > 0) {
+      query.category = { $in: categoryArray };
+    }
+  } else if (category !== "all") {
     query.category = category;
+  }
+
+  if (category === "all" || (!category && !categories)) {
+    // No category filter, include all categories
+    delete query.category;
   }
 
   let selectFields = "";
@@ -37,20 +38,25 @@ const getAllProducts = expressAsyncHandler(async (req, res) => {
     sort: sort || null,
   };
 
-  const products = await Product.find(query)
+  const productsQuery = Product.find(query)
     .select(selectFields)
     .skip(options.skip)
     .limit(options.limit)
-    .sort(options.sort)
-    .exec();
+    .sort(options.sort);
 
-  const productsCount = await Product.countDocuments().exec();
+  const products = await productsQuery.exec();
+
+  let productsCount = products.length;
+
+  if (category === "all" || (!category && !categories)) {
+    productsCount = await Product.countDocuments().exec();
+  }
 
   const response = {
     products,
-    total: category !== "all" ? products.length : productsCount,
-    limit: limit,
-    skip: skip,
+    total: productsCount,
+    limit: options.limit,
+    skip: options.skip,
   };
 
   res.status(200).json(response);
