@@ -2,7 +2,8 @@ import { Product } from "../models/productModel.js";
 import expressAsyncHandler from "express-async-handler";
 
 const getAllProducts = expressAsyncHandler(async (req, res) => {
-  const { search, limit, skip, select, sort, category, categories } = req.query;
+  const { search, select, sort, category, categories, page, per_page } =
+    req.query;
 
   const query = {};
 
@@ -33,8 +34,8 @@ const getAllProducts = expressAsyncHandler(async (req, res) => {
   }
 
   const options = {
-    limit: parseInt(limit) || 50,
-    skip: parseInt(skip) || 0,
+    limit: parseInt(per_page) || 6,
+    skip: (parseInt(page) - 1) * parseInt(per_page) || 0,
     sort: sort || null,
   };
 
@@ -46,17 +47,18 @@ const getAllProducts = expressAsyncHandler(async (req, res) => {
 
   const products = await productsQuery.exec();
 
-  let productsCount = products.length;
+  const productsCount = products.length;
 
-  if (category === "all" || (!category && !categories)) {
-    productsCount = await Product.countDocuments().exec();
-  }
+  const totalProductsCount = await Product.find(query).countDocuments().exec();
+
+  const totalPages = Math.ceil(totalProductsCount / options.limit);
 
   const response = {
     products,
+    page: parseInt(page) || 1,
+    per_page: options.limit,
     total: productsCount,
-    limit: options.limit,
-    skip: options.skip,
+    total_pages: totalPages,
   };
 
   res.status(200).json(response);
