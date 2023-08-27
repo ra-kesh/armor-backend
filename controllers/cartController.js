@@ -1,67 +1,76 @@
-// import User from "../models/userModel";
 import { CartList } from "../models/cartModel.js";
-import _ from "lodash";
 import expressAsyncHandler from "express-async-handler";
+import mongoose from "mongoose";
 
-export const getAllCartItems = expressAsyncHandler(async (req, res) => {
-  const { userId } = req.params;
-  const cartList = await CartList.findById(userId).populate(
-    "cartItems.product"
-  );
-  res.status(200).json({ success: true, data: cartList });
-});
+// export const getAllCartItems = expressAsyncHandler(async (req, res) => {
+//   const { userId } = req.params;
+//   const cartList = await CartList.findById(userId).populate(
+//     "cartItems.product"
+//   );
+
+//   res.status(200).json({ success: true, cartList });
+// });
 
 export const addItemsToCart = expressAsyncHandler(async (req, res) => {
   const { userId } = req.params;
-  const { product } = req.body;
+  const { _id: productId, name, price, quantity } = req.body;
+
+  if (!mongoose.Types.ObjectId.isValid(productId)) {
+    return res.status(400).json({ error: "Invalid product ID" });
+  }
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    return res.status(400).json({ error: "Invalid user ID" });
+  }
 
   let cartList = await CartList.findById(userId);
 
   if (!cartList) {
-    const cartList = new CartList({
-      _id: userId,
-      cartItems: [{ product: product._id, quantity: 1 }],
-    });
-    await cartList.save();
-    return res.status(201).json({ success: true, cartList });
-  } else {
-    cartList = _.extend(cartList, {
-      cartItems: _.concat(cartList.cartItems, {
-        product: product._id,
-        quantity: 1,
-      }),
-    });
-    await cartList.save();
-    res.status(201).json({ success: true, cartList });
+    cartList = new CartList({ _id: userId, cartItems: [] });
   }
+
+  const existingItem = cartList.cartItems.find((item) =>
+    item.product.equals(productId)
+  );
+
+  if (existingItem) {
+    existingItem.quantity += quantity;
+  } else {
+    cartList.cartItems.push({
+      product: productId,
+      name: name,
+      price: price,
+      quantity: quantity,
+    });
+  }
+
+  const updatedCartList = await cartList.save();
+
+  res.status(201).json({ success: true, updatedCartList });
 });
 
 export const changeItemQuantity = expressAsyncHandler(async (req, res) => {
   const { userId, productId } = req.params;
   const { quantity } = req.body;
 
-  let cartList = await CartList.findById(userId);
+  const updatedCartList = await CartList.updateCartItemQuantity(
+    userId,
+    productId,
+    quantity
+  );
 
-  cartList = _.extend(cartList, {
-    cartItems: _.map(cartList.cartItems, (item) =>
-      item.product.toString() === productId
-        ? _.extend(item, { quantity })
-        : item
-    ),
-  });
-  await cartList.save();
-  res.status(201).json({ success: true, cartList });
+  if (!updatedCartList) {
+    return res.status(404).json({ error: "Cart or item not found" });
+  }
+
+  res.status(201).json({ success: true, updatedCartList });
 });
 
 export const removeItemFromCart = expressAsyncHandler(async (req, res) => {
   const { userId, productId } = req.params;
-  let cartList = await CartList.findById(userId);
-  cartList = _.extend(cartList, {
-    cartItems: _.filter(
-      cartList.cartItems,
-      (item) => item.product.toString() !== productId
-    ),
-  });
-  await cartList.save();
-  res.status(201).json({ success: true, cartList });
+
+  await CartList.removeCartItem(userId, productId);
+
+  // const updatedCartList = await CartList.findById(userId);
+
+  return res.status(200).json({ success: true });
 });
