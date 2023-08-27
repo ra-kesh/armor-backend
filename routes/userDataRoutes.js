@@ -14,7 +14,10 @@ router.get(
         path: "cartItems.product",
         select: "image",
       }),
-      WishList.findById(userId),
+      WishList.findById(userId).populate({
+        path: "wishListItems.product",
+        select: ["name", "image", "price", "inStock"],
+      }),
     ]);
 
     res.json({

@@ -20,26 +20,15 @@ const WishListSchema = mongoose.Schema(
   }
 );
 
+WishListSchema.statics.removeWishListItem = async function (userId, productId) {
+  const WishList = this;
+
+  const updatedWishList = await WishList.updateOne(
+    { _id: userId },
+    { $pull: { wishListItems: { product: productId } } }
+  );
+
+  return updatedWishList;
+};
+
 export const WishList = mongoose.model("WishList", WishListSchema);
-
-// const mongoose = require("mongoose");
-
-// const wishListSchema = mongoose.Schema(
-//   {
-//     _id: {
-//       type: mongoose.Schema.Types.ObjectId,
-//       ref: "User",
-//     },
-//     wishListItems: [
-//       {
-//         type: mongoose.Schema.Types.ObjectId,
-//         ref: "Product",
-//       },
-//     ],
-//   },
-//   { timestamps: true }
-// );
-
-// const WishList = mongoose.model("WishList", wishListSchema);
-
-// module.exports = { WishList };
