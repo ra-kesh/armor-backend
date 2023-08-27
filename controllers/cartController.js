@@ -52,6 +52,13 @@ export const changeItemQuantity = expressAsyncHandler(async (req, res) => {
   const { userId, productId } = req.params;
   const { quantity } = req.body;
 
+  if (!mongoose.Types.ObjectId.isValid(productId)) {
+    return res.status(400).json({ error: "Invalid product ID" });
+  }
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    return res.status(400).json({ error: "Invalid user ID" });
+  }
+
   const updatedCartList = await CartList.updateCartItemQuantity(
     userId,
     productId,
@@ -68,9 +75,18 @@ export const changeItemQuantity = expressAsyncHandler(async (req, res) => {
 export const removeItemFromCart = expressAsyncHandler(async (req, res) => {
   const { userId, productId } = req.params;
 
-  await CartList.removeCartItem(userId, productId);
+  if (!mongoose.Types.ObjectId.isValid(productId)) {
+    return res.status(400).json({ error: "Invalid product ID" });
+  }
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    return res.status(400).json({ error: "Invalid user ID" });
+  }
 
-  // const updatedCartList = await CartList.findById(userId);
+  const updatedCart = await CartList.removeCartItem(userId, productId);
+
+  if (!updatedCart.nModified) {
+    return res.status(404).json({ error: "Cart item not found" });
+  }
 
   return res.status(200).json({ success: true });
 });
