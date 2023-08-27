@@ -22,10 +22,8 @@ router.get(
 
     res.json({
       success: true,
-      data: {
-        cartList: cartList ? cartList.cartItems : [],
-        wishList: wishList ? wishList.wishListItems : [],
-      },
+      cartList: cartList ? cartList.cartItems : [],
+      wishList: wishList ? wishList.wishListItems : [],
     });
   })
 );
