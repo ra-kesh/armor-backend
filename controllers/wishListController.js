@@ -62,8 +62,10 @@ export const removeItemFromWishList = expressAsyncHandler(async (req, res) => {
   const updatedWishList = await WishList.removeWishListItem(userId, productId);
 
   if (!updatedWishList.nModified) {
-    return res.status(404).json({ error: "Wishlist item not found" });
+    return res
+      .status(404)
+      .json({ error: "Wishlist item could not be deleted" });
   }
 
-  res.status(200).json({ success: true, updatedWishList });
+  res.status(200).json({ success: true });
 });
