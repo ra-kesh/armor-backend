@@ -59,6 +59,17 @@ export const changeItemQuantity = expressAsyncHandler(async (req, res) => {
     return res.status(400).json({ error: "Invalid user ID" });
   }
 
+  if (quantity === 0) {
+    const removedCartItem = await CartList.removeCartItem(userId, productId);
+
+    if (!removedCartItem) {
+      return res.status(404).json({ error: "Cart or item not found" });
+    }
+    return res
+      .status(200)
+      .json({ success: true, message: "Item removed from cart" });
+  }
+
   const updatedCartList = await CartList.updateCartItemQuantity(
     userId,
     productId,

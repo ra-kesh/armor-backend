@@ -1,5 +1,6 @@
 import { Product } from "../models/productModel.js";
 import expressAsyncHandler from "express-async-handler";
+import mongoose from "mongoose";
 
 const getAllProducts = expressAsyncHandler(async (req, res) => {
   const { search, select, sort, category, categories, page, per_page } =
@@ -66,8 +67,18 @@ const getAllProducts = expressAsyncHandler(async (req, res) => {
 
 const getProductDetails = expressAsyncHandler(async (req, res) => {
   const { productId } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(productId)) {
+    return res.status(400).json({ error: "Invalid product ID" });
+  }
+
   const product = await Product.findById(productId);
-  res.status(200).json({ success: true, data: product });
+
+  if (!product) {
+    return res.status(404).json({ error: "Product not found" });
+  }
+
+  res.status(200).json({ success: true, product });
 });
 
 const getProductCategories = expressAsyncHandler(async (req, res) => {
