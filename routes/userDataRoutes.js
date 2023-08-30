@@ -10,16 +10,20 @@ router.get(
     const { userId } = req.params;
 
     const [cartList, wishList] = await Promise.all([
-      CartList.findById(userId),
-      WishList.findById(userId),
+      CartList.findById(userId).populate({
+        path: "cartItems.product",
+        select: "image",
+      }),
+      WishList.findById(userId).populate({
+        path: "wishListItems.product",
+        select: ["name", "image", "price", "inStock"],
+      }),
     ]);
 
     res.json({
       success: true,
-      data: {
-        cartList: cartList ? cartList.cartItems : [],
-        wishList: wishList ? wishList.wishListItems : [],
-      },
+      cartList: cartList ? cartList.cartItems : [],
+      wishList: wishList ? wishList.wishListItems : [],
     });
   })
 );

@@ -1,6 +1,6 @@
 import { WishList } from "../models/wishListModel.js";
-import _ from "lodash";
 import expressAsyncHandler from "express-async-handler";
+import mongoose from "mongoose";
 
 export const getAllWishListItems = expressAsyncHandler(async (req, res) => {
   const { userId } = req.params;
@@ -12,34 +12,60 @@ export const getAllWishListItems = expressAsyncHandler(async (req, res) => {
 
 export const addItemsToWishList = expressAsyncHandler(async (req, res) => {
   const { userId } = req.params;
-  const { product } = req.body;
+  const { _id: productId } = req.body;
+
+  if (!mongoose.Types.ObjectId.isValid(productId)) {
+    return res.status(400).json({ error: "Invalid product ID" });
+  }
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    return res.status(400).json({ error: "Invalid user ID" });
+  }
+
   let wishList = await WishList.findById(userId);
 
   if (!wishList) {
     const newWishlist = new WishList({
       _id: userId,
-      wishListItems: [{ product: product._id }],
+      wishListItems: [{ product: productId }],
     });
     await newWishlist.save();
     res.status(201).json({ success: true, newWishlist });
   }
 
-  wishList = _.extend(wishList, {
-    wishListItems: _.concat(wishList.wishListItems, { product: product._id }),
-  });
-  await wishList.save();
-  res.status(201).json({ success: true, wishList });
+  const existingItem = wishList.wishListItems.find((item) =>
+    item.product.equals(productId)
+  );
+
+  if (existingItem) {
+    res.json({ message: "Item alredy exists" });
+  } else {
+    wishList.wishListItems.push({
+      product: productId,
+    });
+  }
+
+  const updatedWishList = await wishList.save();
+
+  res.status(201).json({ success: true, updatedWishList });
 });
 
 export const removeItemFromWishList = expressAsyncHandler(async (req, res) => {
   const { userId, productId } = req.params;
-  let wishList = await WishList.findById(userId);
-  wishList = _.extend(wishList, {
-    wishListItems: _.filter(
-      wishList.wishListItems,
-      (item) => item.product.toString() !== productId
-    ),
-  });
-  await wishList.save();
-  res.status(200).json({ success: true, wishList });
+
+  if (!mongoose.Types.ObjectId.isValid(productId)) {
+    return res.status(400).json({ error: "Invalid product ID" });
+  }
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    return res.status(400).json({ error: "Invalid user ID" });
+  }
+
+  const updatedWishList = await WishList.removeWishListItem(userId, productId);
+
+  if (!updatedWishList.nModified) {
+    return res
+      .status(404)
+      .json({ error: "Wishlist item could not be deleted" });
+  }
+
+  res.status(200).json({ success: true });
 });
