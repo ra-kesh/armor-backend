@@ -65,6 +65,56 @@ const getAllProducts = expressAsyncHandler(async (req, res) => {
   res.status(200).json(response);
 });
 
+const getFeaturedProducts = expressAsyncHandler(async (req, res) => {
+  const { search, select, sort, page, per_page } = req.query;
+
+  const query = {
+    isFeatured: true,
+  };
+
+  if (search) {
+    const searchFields = ["name", "description", "category", "brand"];
+    query.$or = searchFields.map((field) => ({
+      [field]: { $regex: search, $options: "i" },
+    }));
+  }
+
+  let selectFields = "";
+  if (select) {
+    selectFields = select.split(",").join(" ");
+  }
+
+  const options = {
+    limit: parseInt(per_page) || 6,
+    skip: (parseInt(page) - 1) * parseInt(per_page) || 0,
+    sort: sort || null,
+  };
+
+  const productsQuery = Product.find(query)
+    .select(selectFields)
+    .skip(options.skip)
+    .limit(options.limit)
+    .sort(options.sort);
+
+  const products = await productsQuery.exec();
+
+  const productsCount = products.length;
+
+  const totalProductsCount = await Product.find(query).countDocuments().exec();
+
+  const totalPages = Math.ceil(totalProductsCount / options.limit);
+
+  const response = {
+    products,
+    page: parseInt(page) || 1,
+    per_page: options.limit,
+    total: productsCount,
+    total_pages: totalPages,
+  };
+
+  res.status(200).json(response);
+});
+
 const getProductDetails = expressAsyncHandler(async (req, res) => {
   const { productId } = req.params;
 
@@ -86,4 +136,9 @@ const getProductCategories = expressAsyncHandler(async (req, res) => {
   res.status(200).json({ sucess: true, data: categories });
 });
 
-export { getAllProducts, getProductDetails, getProductCategories };
+export {
+  getAllProducts,
+  getProductDetails,
+  getProductCategories,
+  getFeaturedProducts,
+};
